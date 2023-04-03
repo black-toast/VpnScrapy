@@ -12,19 +12,17 @@ import (
 
 var default_domain = "https://an.tly07.com"
 
-// var default_domain = "https://test.com"
 var login_path = "/api/E-an2.php"
 
 func Login(email string, password string) ([]byte, error) {
 	// a=JiaMi(email)&b=password&time=curtime
-	encrypt_result, err := crypt.AesCBCEncrypt([]byte(email))
+	encryptResult, err := crypt.AesCBCEncrypt([]byte(email))
 	if err != nil {
 		return nil, err
 	}
-	cur_timemill := time.Now().UnixMilli()
-	encrypt_email := base64.StdEncoding.EncodeToString(encrypt_result)
-	formbody := fmt.Sprintf("a=%s&b=%s&time=%d", encrypt_email, password, cur_timemill)
-	fmt.Println("formbody=", formbody)
+	curTimeMills := time.Now().UnixMilli()
+	encryptEmail := base64.StdEncoding.EncodeToString(encryptResult)
+	formBody := fmt.Sprintf("a=%s&b=%s&time=%d", encryptEmail, password, curTimeMills)
 
 	// urli := url.URL{}
 	// urlproxy, _ := urli.Parse("http://127.0.0.1:8888")
@@ -35,7 +33,7 @@ func Login(email string, password string) ([]byte, error) {
 	}
 	req, err := http.NewRequest("POST",
 		default_domain+login_path,
-		strings.NewReader(formbody),
+		strings.NewReader(formBody),
 	)
 	if err != nil {
 		return nil, err
@@ -48,19 +46,24 @@ func Login(email string, password string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			return
+		}
+	}(resp.Body)
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
-	decode_result, err := base64.StdEncoding.DecodeString(string(body))
+	decodeResult, err := base64.StdEncoding.DecodeString(string(body))
 	if err != nil {
 		return nil, err
 	}
-	decrypt_result, err := crypt.AesCBCDecrypt(decode_result)
+	decryptResult, err := crypt.AesCBCDecrypt(decodeResult)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("response body:", string(decrypt_result))
-	return decrypt_result, nil
+	//fmt.Println("response body:", string(decrypt_result))
+	return decryptResult, nil
 }

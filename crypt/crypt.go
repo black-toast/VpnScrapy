@@ -19,6 +19,16 @@ func PKCSNoPadding(ciphertext []byte) []byte {
 	return ciphertext
 }
 
+func pkcsUnPadding(origData []byte) []byte {
+	length := len(origData)
+	for i := 1; i <= 16; i++ {
+		if origData[length-i] != byte(0) {
+			return origData[:(length - i + 1)]
+		}
+	}
+	return origData
+}
+
 func AesCBCEncrypt(origData []byte) ([]byte, error) {
 	block, err := aes.NewCipher(cryptKey)
 	if err != nil {
@@ -39,5 +49,6 @@ func AesCBCDecrypt(encryptData []byte) ([]byte, error) {
 	blockMode := cipher.NewCBCDecrypter(block, cryptKIv)
 	origData := make([]byte, len(encryptData))
 	blockMode.CryptBlocks(origData, encryptData)
+	origData = pkcsUnPadding(origData)
 	return origData, nil
 }
