@@ -1,13 +1,11 @@
 package crypt
 
 import (
+	"VpnScrapy/util"
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 )
-
-var cryptKey = []byte("tlynet923456789k")
-var cryptKIv = []byte("9987654321fedcsu")
 
 func PKCSNoPadding(ciphertext []byte) []byte {
 	length := len(ciphertext)
@@ -30,23 +28,23 @@ func pkcsUnPadding(origData []byte) []byte {
 }
 
 func AesCBCEncrypt(origData []byte) ([]byte, error) {
-	block, err := aes.NewCipher(cryptKey)
+	block, err := aes.NewCipher(util.WithConstant().GetAesKey())
 	if err != nil {
 		return nil, err
 	}
 	origData = PKCSNoPadding(origData)
-	blockMode := cipher.NewCBCEncrypter(block, cryptKIv)
+	blockMode := cipher.NewCBCEncrypter(block, util.WithConstant().GetAesIv())
 	crypted := make([]byte, len(origData))
 	blockMode.CryptBlocks(crypted, origData)
 	return crypted, nil
 }
 
 func AesCBCDecrypt(encryptData []byte) ([]byte, error) {
-	block, err := aes.NewCipher(cryptKey)
+	block, err := aes.NewCipher(util.WithConstant().GetAesKey())
 	if err != nil {
 		return nil, err
 	}
-	blockMode := cipher.NewCBCDecrypter(block, cryptKIv)
+	blockMode := cipher.NewCBCDecrypter(block, util.WithConstant().GetAesIv())
 	origData := make([]byte, len(encryptData))
 	blockMode.CryptBlocks(origData, encryptData)
 	origData = pkcsUnPadding(origData)
