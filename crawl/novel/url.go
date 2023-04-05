@@ -1,11 +1,22 @@
 package novel
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
+
+const (
+	FileNameTitle      = "title.txt"
+	FileNameAuthor     = "author.txt"
+	FileNameDesc       = "desc.txt"
+	FileNameChapter    = "ch-%d.txt"
+	UrlHulkNovelDomain = "https://novelhulk.com"
+	PathNovelName      = "/nb/spy-mage-system-book"
+	PathChapterList    = "/ajax/chapter-option?novelId=%s&currentChapterId=%s"
+)
 
 type Url struct {
 	saveIntroductionPath string
-	urlHulkNovelDomain   string
-	pathNovelName        string
 }
 
 var url *Url
@@ -16,15 +27,13 @@ func init() {
 	if err != nil {
 		return
 	}
-	url.saveIntroductionPath = homeDir + "\\Desktop"
-	url.urlHulkNovelDomain = "https://novelhulk.com"
-	url.pathNovelName = "/nb/spy-mage-system-book"
+	url.saveIntroductionPath = fmt.Sprintf("%s%s%s", homeDir, string(os.PathSeparator), "Desktop")
 }
 
 func WithUrl() *Url {
 	return url
 }
 
-func (url *Url) BuildNovelUrl() string {
-	return url.urlHulkNovelDomain + url.pathNovelName
+func BuildNovelUrl() string {
+	return UrlHulkNovelDomain + PathNovelName
 }

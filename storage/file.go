@@ -20,14 +20,13 @@ func Mkdir(path string) {
 	if Exists(path) {
 		return
 	}
-	err := os.Mkdir(path, 0666)
+	err := os.MkdirAll(path, 0666)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func Create(path string) *os.File {
-	fmt.Println("Create path:", path)
 	file, err := os.Create(path)
 	if err != nil {
 		fmt.Println(err)

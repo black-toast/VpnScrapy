@@ -1,16 +1,18 @@
 package hulk
 
-type Xpath struct {
-	NovelTitle  string
-	NovelAuthor string
-	NovelDesc   string
-}
+const (
+	// 小说详情页
+	NovelTitle   = "//*[@id=\"novel\"]/div[1]/div[1]/div[3]/h3"
+	NovelAuthor  = "//*[@id=\"novel\"]/div[1]/div[1]/div[3]/ul/li[1]/a"
+	NovelDesc    = "//*[@id=\"tab-description\"]/div"
+	NovelNovelId = "//div[@id=\"rating\"]/@data-novel-id"
+	NovelReadUrl = "//a[contains(@class, \"btn-read-now\")]/@href"
 
-var xpath *Xpath
+	// 小说目录
+	NovelChapterListUrl  = "//option/@value"
+	NovelChapterListName = "//option/text()"
 
-func init() {
-	xpath = new(Xpath)
-	xpath.NovelTitle = "//*[@id=\"novel\"]/div[1]/div[1]/div[3]/h3"
-	xpath.NovelAuthor = "//*[@id=\"novel\"]/div[1]/div[1]/div[3]/ul/li[1]/a"
-	xpath.NovelDesc = "//*[@id=\"tab-description\"]/div"
-}
+	// 小说章节页
+	NovelChapterTitle = "//a[@class=\"chr-title\"]/span"
+	NovelChapter      = "//*[@id=\"chr-content\"]/p"
+)
