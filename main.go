@@ -1,10 +1,9 @@
 package main
 
 import (
-	"VpnScrapy/crawl/novel"
+	"VpnScrapy/server"
 )
 
 func main() {
-	//server.ConfigServer()
-	novel.Scrapy()
+	server.ConfigServer()
 }

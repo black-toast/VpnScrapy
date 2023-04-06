@@ -18,7 +18,7 @@ type NovelScrapy interface {
 	Save(fileDir, fileName, content string)
 }
 
-func Scrapy() {
+func Scrapy(startCrawlChapter int) {
 	// request novel introduction
 	fmt.Println("request novel introduction")
 	novelUrl := BuildNovelUrl()
@@ -58,6 +58,9 @@ func Scrapy() {
 
 	// request novel chapter
 	for index, chapter := range chapterList {
+		if index+1 < startCrawlChapter {
+			continue
+		}
 		if index == 0 {
 			fmt.Println("wait 5s, then request novel chapter(", chapter.Name, ")")
 		} else {
@@ -82,7 +85,6 @@ func Scrapy() {
 
 		// fmt.Printf("%s\n%s\n%s", chapterTitle, nextChapterUrl, chapter)
 		saveChapterFileName := fmt.Sprintf(FileNameChapter, index+1)
-		fmt.Println(saveChapterFileName, index)
 		chapter = chapterTitle + "\n" + chapter
 		novelScrapy.Save(novelDir, saveChapterFileName, chapter)
 	}

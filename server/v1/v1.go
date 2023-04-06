@@ -13,6 +13,7 @@ import (
 func Launch(engine *gin.Engine) {
 	v1Group := engine.Group("v1")
 	{
+		LaunchNovel(v1Group)
 		v1Group.GET("/vmess", generateVmessList)
 	}
 }
