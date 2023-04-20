@@ -1,8 +1,6 @@
 package main
 
-import (
-	"VpnScrapy/server"
-)
+import "VpnScrapy/server"
 
 func main() {
 	server.ConfigServer()

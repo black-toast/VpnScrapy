@@ -3,7 +3,7 @@ package hulk
 const (
 	// 小说详情页
 	NovelTitle   = "//*[@id=\"novel\"]/div[1]/div[1]/div[3]/h3"
-	NovelAuthor  = "//*[@id=\"novel\"]/div[1]/div[1]/div[3]/ul/li[1]/a"
+	NovelAuthor  = "//div[contains(@class, \"desc\")]/ul/li[2]/a/text()"
 	NovelDesc    = "//*[@id=\"tab-description\"]/div"
 	NovelNovelId = "//div[@id=\"rating\"]/@data-novel-id"
 	NovelReadUrl = "//a[contains(@class, \"btn-read-now\")]/@href"

@@ -11,7 +11,7 @@ const (
 	FileNameDesc       = "desc.txt"
 	FileNameChapter    = "ch-%d.txt"
 	UrlHulkNovelDomain = "https://novelhulk.com"
-	PathNovelName      = "/nb/spy-mage-system-book"
+	PathNovelName      = "/nb/invincible-divine-dragons-cultivation-system-book"
 	PathChapterList    = "/ajax/chapter-option?novelId=%s&currentChapterId=%s"
 )
 
