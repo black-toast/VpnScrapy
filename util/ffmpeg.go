@@ -24,16 +24,12 @@ func MakeImageVideo(imagePath, audioPath, outputVideoPath string) {
 		outputVideoPath,
 	}
 
-	fmt.Println(args)
-
 	// 创建 *exec.Cmd
 	cmd := exec.Command("ffmpeg", args...)
 
-	// // 运行 ffmpeg 命令
+	// 运行 ffmpeg 命令
 	if err := cmd.Run(); err != nil {
 		fmt.Println(err)
 		return
 	}
-
-	fmt.Println("转码成功")
 }

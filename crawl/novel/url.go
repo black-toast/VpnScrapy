@@ -11,7 +11,7 @@ const (
 	FileNameDesc       = "desc.txt"
 	FileNameChapter    = "ch-%d.txt"
 	UrlHulkNovelDomain = "https://novelhulk.com"
-	PathNovelName      = "/nb/invincible-divine-dragons-cultivation-system-book"
+	PathNovelName      = "/nb/spy-mage-system-book"
 	PathChapterList    = "/ajax/chapter-option?novelId=%s&currentChapterId=%s"
 )
 
@@ -23,11 +23,11 @@ var url *Url
 
 func init() {
 	url = new(Url)
-	homeDir, err := os.UserHomeDir()
+	wd, err := os.Getwd()
 	if err != nil {
-		return
+		panic(err)
 	}
-	url.saveIntroductionPath = fmt.Sprintf("%s%s%s", homeDir, string(os.PathSeparator), "Desktop")
+	url.saveIntroductionPath = fmt.Sprintf("%s%s%s", wd, string(os.PathSeparator), "output")
 }
 
 func WithUrl() *Url {

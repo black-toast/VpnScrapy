@@ -13,3 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+output/SpyMageSystem/*.txt
+output/SpyMageSystem/*.mp3
+output/SpyMageSystem/*.mp4

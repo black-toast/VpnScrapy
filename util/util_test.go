@@ -1,12 +1,23 @@
 package util
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestEdgeTts(t *testing.T) {
-	EdgeTts("D:\\python_workspace\\tutorial\\tutorial\\speech\\edge-tts.py")
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	EdgeTts(wd+`\output\SpyMageSystem\ch-1.txt`, wd+`\output\SpyMageSystem\ch-1.mp3`)
 }
 
 func TestFfmpeg(t *testing.T) {
-	dirPath := "D:\\DesktopData\\gp_ad_project\\youtube\\CULTIVATION ONLINE\\"
-	MakeImageVideo(dirPath+"cultivation-online-novel.jpg", dirPath+"ch-1170.mp3", dirPath+"ch-1170.mp4")
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	MakeImageVideo(wd+`\output\SpyMageSystem\cover.jpg`, wd+`\output\SpyMageSystem\ch-1.mp3`, wd+`\output\SpyMageSystem\ch-1.mp4`)
 }

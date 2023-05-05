@@ -3,8 +3,11 @@ package novel
 import (
 	"VpnScrapy/crawl/novel/hulk"
 	"VpnScrapy/http"
+	"VpnScrapy/storage"
+	"VpnScrapy/util"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"golang.org/x/net/html"
@@ -18,7 +21,12 @@ type NovelScrapy interface {
 	Save(fileDir, fileName, content string)
 }
 
-func Scrapy(startCrawlChapter int) {
+func Scrapy(startChapter, endChapter int) {
+	if startChapter < -1 || endChapter < -1 {
+		fmt.Println("start or end chapter is illegal chapter")
+		return
+	}
+
 	// request novel introduction
 	fmt.Println("request novel introduction")
 	novelUrl := BuildNovelUrl()
@@ -35,7 +43,8 @@ func Scrapy(startCrawlChapter int) {
 	readChapterId := novelScrapy.ParseReadChapterId(doc, novelUrl+"/")
 
 	// save novel introduction
-	novelDir := fmt.Sprintf("%s%s%s", url.saveIntroductionPath, string(os.PathSeparator), title)
+	titlePath := strings.ReplaceAll(title, " ", "")
+	novelDir := fmt.Sprintf("%s%s%s", url.saveIntroductionPath, string(os.PathSeparator), titlePath)
 	novelScrapy.Save(novelDir, FileNameTitle, title)
 	novelScrapy.Save(novelDir, FileNameAuthor, author)
 	novelScrapy.Save(novelDir, FileNameDesc, desc)
@@ -56,10 +65,21 @@ func Scrapy(startCrawlChapter int) {
 		return
 	}
 
+	if startChapter <= -1 {
+		startChapter = 1
+	}
+
+	if endChapter <= -1 {
+		endChapter = len(chapterList)
+	}
+
 	// request novel chapter
 	for index, chapter := range chapterList {
-		if index+1 < startCrawlChapter {
+		if index+1 < startChapter {
 			continue
+		}
+		if index+1 > endChapter {
+			break
 		}
 		if index == 0 {
 			fmt.Println("wait 5s, then request novel chapter(", chapter.Name, ")")
@@ -74,19 +94,31 @@ func Scrapy(startCrawlChapter int) {
 		}
 		doc = novelScrapy.CreateParseDoc(string(content))
 		chapterTitle := novelScrapy.ParseChapterTitle(doc)
-		chapter := novelScrapy.ParseChapter(doc)
+		lineChapterTitle, chapter := novelScrapy.ParseChapter(doc)
+		if chapterTitle == "" {
+			chapterTitle = lineChapterTitle
+		}
 
-		// chapterSplit := strings.Split(chapter, "\n")
-		// line := chapterSplit[0]
-		// lineLower := strings.ToLower(line)
-		// chapterTitleLower := strings.ToLower(chapterTitle)
-		// index := strings.Index(lineLower, chapterTitleLower+"1")
-		// fmt.Println("lineLower:", lineLower, ",chapterTitleLower:", chapterTitleLower, ",index:", index)
-
-		// fmt.Printf("%s\n%s\n%s", chapterTitle, nextChapterUrl, chapter)
+		// save chapter
+		chapter = fmt.Sprintf("Chapter %d: %s\n%s", index+1, chapterTitle, chapter)
 		saveChapterFileName := fmt.Sprintf(FileNameChapter, index+1)
-		chapter = chapterTitle + "\n" + chapter
 		novelScrapy.Save(novelDir, saveChapterFileName, chapter)
+
+		// transform mp3 audio
+		ttsInput := fmt.Sprintf(`%s\ch-%d.txt`, novelDir, index+1)
+		ttsMp3Output := fmt.Sprintf(`%s\ch-%d.mp3`, novelDir, index+1)
+		util.EdgeTts(ttsInput, ttsMp3Output)
+
+		// transform mp4 video
+		videoImage := fmt.Sprintf(`%s\cover.jpg`, novelDir)
+		ttsMp4Output := fmt.Sprintf(`%s\ch-%d.mp4`, novelDir, index+1)
+		util.MakeImageVideo(videoImage, ttsMp3Output, ttsMp4Output)
+
+		storage.Delete(ttsInput)
+		storage.Delete(ttsMp3Output)
+		// storage.Delete(ttsMp4Output)
+
+		fmt.Println("=============================================")
 	}
 }
 

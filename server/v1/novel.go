@@ -2,8 +2,9 @@ package v1
 
 import (
 	"VpnScrapy/crawl/novel"
-	"github.com/gin-gonic/gin"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 func LaunchNovel(group *gin.RouterGroup) {
@@ -20,5 +21,5 @@ func crawlNovel(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	go novel.Scrapy(startCrawlChapter)
+	go novel.Scrapy(startCrawlChapter, -1)
 }

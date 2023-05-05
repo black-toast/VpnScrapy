@@ -34,3 +34,10 @@ func Create(path string) *os.File {
 	}
 	return file
 }
+
+func Delete(path string) {
+	err := os.Remove(path)
+	if err != nil {
+		panic(err)
+	}
+}

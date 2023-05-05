@@ -2,16 +2,21 @@ package util
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 )
 
-func EdgeTts(ttsTextPath string) {
-	pyExe := "python3"
-	pyFile := "D:\\python_workspace\\tutorial\\tutorial\\speech\\edge-tts.py"
-	out, err := exec.Command(pyExe, pyFile).Output()
+func EdgeTts(ttsInput, ttsOutput string) {
+	wd, err := os.Getwd()
 	if err != nil {
-		fmt.Println("err:", err)
 		panic(err)
 	}
-	println(fmt.Sprintf("out: %s", out))
+
+	pyExe := "python3"
+	edgeTtsPyFile := fmt.Sprintf("%s\\library\\edge-tts.py", wd)
+
+	cmd := exec.Command(pyExe, edgeTtsPyFile, ttsInput, ttsOutput)
+	if err := cmd.Run(); err != nil {
+		panic(err)
+	}
 }

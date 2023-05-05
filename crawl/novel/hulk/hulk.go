@@ -2,7 +2,9 @@ package hulk
 
 import (
 	"VpnScrapy/storage"
+	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/antchfx/htmlquery"
@@ -76,15 +78,32 @@ func (scrapy HulkScrapy) ParseNovelChapterList(doc *html.Node) []*ChapterList {
 
 func (scrapy HulkScrapy) ParseChapterTitle(doc *html.Node) string {
 	node := htmlquery.FindOne(doc, NovelChapterTitle)
-	return strings.Trim(htmlquery.InnerText(node), "\n ")
+	return parseRealChapterTitle(strings.Trim(htmlquery.InnerText(node), "\n "))
 }
 
-func (scrapy HulkScrapy) ParseChapter(doc *html.Node) string {
+func (scrapy HulkScrapy) ParseChapter(doc *html.Node) (string, string) {
 	nodes := htmlquery.Find(doc, NovelChapter)
 	lines := len(nodes)
 	chapter := ""
+	parseChapterTitleLine := 0
+	chapterTitle := ""
 	for index, node := range nodes {
-		line := removeSpecialChars(strings.Trim(htmlquery.InnerText(node), "\n "))
+		lineContent := strings.Trim(htmlquery.InnerText(node), "\n ")
+
+		// 解析第一行标题
+		if index == parseChapterTitleLine {
+			if lineContent == "" {
+				parseChapterTitleLine++
+				continue
+			}
+			chapterTitle = parseFirstLineChapterTitle(lineContent)
+			if chapterTitle != "" {
+				// fmt.Printf("find line chapter title: %s", chapterTitle)
+				continue
+			}
+		}
+
+		line := removeSpecialChars(lineContent)
 		if line == "" {
 			continue
 		}
@@ -93,11 +112,63 @@ func (scrapy HulkScrapy) ParseChapter(doc *html.Node) string {
 			chapter += "\n"
 		}
 	}
-	return chapter
+	return chapterTitle, chapter
 }
 
-func removeSpecialChars(str string) string {
-	return strings.Replace(str, ".....", "", -1)
+// 解析真正的章节标题
+// @return chapterNumber, chapterTitle
+func parseRealChapterTitle(content string) string {
+	// extract chapter number
+	// example: https://novelhulk.com/nb/spy-mage-system-book/cchapter-1
+	compileRegex := regexp.MustCompile(`(\d{1,}):?`)
+	matchArr := compileRegex.FindStringSubmatch(content)
+	if len(matchArr) < 2 {
+		return content
+	}
+	chapterNum := matchArr[len(matchArr)-1]
+
+	chapterNumStartIndex := strings.LastIndex(content, chapterNum)
+	if chapterNumStartIndex == -1 {
+		panic(errors.New("illegal chapter title format(" + content + ")"))
+	}
+
+	chapterTitleStartIndex := chapterNumStartIndex + len(chapterNum)
+	chapterTitle := strings.Trim(content[chapterTitleStartIndex:], ": ")
+	return chapterTitle
+}
+
+// 解析文章内容第一行中可能存在的章节标题
+// @return chapterNumber, chapterTitle
+func parseFirstLineChapterTitle(content string) string {
+	// extract chapter number
+	// example: https://novelhulk.com/nb/spy-mage-system-book/cchapter-1
+	compileRegex := regexp.MustCompile(`(\d{1,}):?`)
+	matchArr := compileRegex.FindStringSubmatch(content)
+	if len(matchArr) < 2 {
+		return ""
+	}
+	chapterNum := matchArr[len(matchArr)-1]
+
+	chapterNumStartIndex := strings.LastIndex(content, chapterNum)
+	if chapterNumStartIndex == -1 {
+		panic(errors.New("illegal line chapter title format(" + content + ")"))
+	}
+
+	chapterTitleStartIndex := chapterNumStartIndex + len(chapterNum)
+	chapterTitle := strings.Trim(content[chapterTitleStartIndex:], ": ")
+	return chapterTitle
+}
+
+func removeSpecialChars(content string) string {
+	// remove ..... format
+	// example: https://novelhulk.com/nb/spy-mage-system-book/cchapter-1
+	compileRegex := regexp.MustCompile(`(\.{2,})`)
+	matchArr := compileRegex.FindStringSubmatch(content)
+	if len(matchArr) >= 2 {
+		return ""
+	}
+
+	return content
 }
 
 func (scrapy HulkScrapy) Save(fileDir, fileName, content string) {
