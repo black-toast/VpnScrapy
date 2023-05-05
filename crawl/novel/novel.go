@@ -82,11 +82,11 @@ func Scrapy(startChapter, endChapter int) {
 			break
 		}
 		if index == 0 {
-			fmt.Println("wait 5s, then request novel chapter(", chapter.Name, ")")
+			fmt.Println("wait 2s, then request novel chapter(", chapter.Name, ")")
 		} else {
-			fmt.Println("wait 5s, then request next novel chapter(", chapter.Name, ")")
+			fmt.Println("wait 2s, then request next novel chapter(", chapter.Name, ")")
 		}
-		time.Sleep(5 * time.Second)
+		time.Sleep(2 * time.Second)
 
 		content, err = Request(chapter.Url, "GET")
 		if err != nil {
@@ -103,22 +103,25 @@ func Scrapy(startChapter, endChapter int) {
 		chapter = fmt.Sprintf("Chapter %d: %s\n%s", index+1, chapterTitle, chapter)
 		saveChapterFileName := fmt.Sprintf(FileNameChapter, index+1)
 		novelScrapy.Save(novelDir, saveChapterFileName, chapter)
+		fmt.Println("save chapter complete")
 
 		// transform mp3 audio
 		ttsInput := fmt.Sprintf(`%s\ch-%d.txt`, novelDir, index+1)
 		ttsMp3Output := fmt.Sprintf(`%s\ch-%d.mp3`, novelDir, index+1)
 		util.EdgeTts(ttsInput, ttsMp3Output)
+		fmt.Println("transform mp3 complete")
 
 		// transform mp4 video
 		videoImage := fmt.Sprintf(`%s\cover.jpg`, novelDir)
 		ttsMp4Output := fmt.Sprintf(`%s\ch-%d.mp4`, novelDir, index+1)
 		util.MakeImageVideo(videoImage, ttsMp3Output, ttsMp4Output)
+		fmt.Println("transform mp4 complete")
 
 		storage.Delete(ttsInput)
 		storage.Delete(ttsMp3Output)
 		// storage.Delete(ttsMp4Output)
 
-		fmt.Println("=============================================")
+		fmt.Println("👆=============================================👇")
 	}
 }
 

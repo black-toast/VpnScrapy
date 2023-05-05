@@ -168,6 +168,11 @@ func removeSpecialChars(content string) string {
 		return ""
 	}
 
+	// example: https://novelhulk.com/nb/spy-mage-system-book/cchapter-27
+	if strings.HasPrefix(content, "The source of this content is") {
+		return ""
+	}
+
 	return content
 }
 
