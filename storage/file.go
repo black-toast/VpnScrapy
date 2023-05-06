@@ -36,6 +36,9 @@ func Create(path string) *os.File {
 }
 
 func Delete(path string) {
+	if !Exists(path) {
+		return
+	}
 	err := os.Remove(path)
 	if err != nil {
 		panic(err)

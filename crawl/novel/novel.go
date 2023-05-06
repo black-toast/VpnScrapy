@@ -21,7 +21,7 @@ type NovelScrapy interface {
 	Save(fileDir, fileName, content string)
 }
 
-func Scrapy(startChapter, endChapter int) {
+func Scrapy(startChapter, endChapter int, path string) {
 	if startChapter < -1 || endChapter < -1 {
 		fmt.Println("start or end chapter is illegal chapter")
 		return
@@ -29,7 +29,7 @@ func Scrapy(startChapter, endChapter int) {
 
 	// request novel introduction
 	fmt.Println("request novel introduction")
-	novelUrl := BuildNovelUrl()
+	novelUrl := BuildNovelUrl() + path
 	content, err := Request(novelUrl, "GET")
 	if err != nil {
 		panic(err)
@@ -88,6 +88,13 @@ func Scrapy(startChapter, endChapter int) {
 		}
 		time.Sleep(2 * time.Second)
 
+		t := time.Now()
+		//参数必须是这个时间,格式任意
+		// s := t.Format("2006-01-02 15:04:05")
+		currentTime := t.Format("2006-01-02 15:04:05")
+		fmt.Printf("current time: %s\n", currentTime)
+
+		startCost := t.Unix()
 		content, err = Request(chapter.Url, "GET")
 		if err != nil {
 			panic(err)
@@ -114,14 +121,17 @@ func Scrapy(startChapter, endChapter int) {
 		// transform mp4 video
 		videoImage := fmt.Sprintf(`%s\cover.jpg`, novelDir)
 		ttsMp4Output := fmt.Sprintf(`%s\ch-%d.mp4`, novelDir, index+1)
+		// 保证执行ffmpeg命令不会提示该文件已存在
+		storage.Delete(ttsMp4Output)
 		util.MakeImageVideo(videoImage, ttsMp3Output, ttsMp4Output)
 		fmt.Println("transform mp4 complete")
 
-		storage.Delete(ttsInput)
+		// storage.Delete(ttsInput)
 		storage.Delete(ttsMp3Output)
 		// storage.Delete(ttsMp4Output)
 
-		fmt.Println("👆=============================================👇")
+		endCost := time.Now().Unix()
+		fmt.Printf("👆======================cost %ds=======================👆\n", (endCost - startCost))
 	}
 }
 

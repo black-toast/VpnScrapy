@@ -21,5 +21,5 @@ func crawlNovel(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	go novel.Scrapy(startCrawlChapter, -1)
+	go novel.Scrapy(startCrawlChapter, -1, "")
 }

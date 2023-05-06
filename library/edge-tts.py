@@ -17,8 +17,8 @@ def readTranText():
     return file_content
 
 async def tran_voice(tran_text) -> None:
-    communicate = edge_tts.Communicate(tran_text, VOICE)
-    # communicate = edge_tts.Communicate(tran_text, VOICE, proxy="http://127.0.0.1:10809")
+    # communicate = edge_tts.Communicate(tran_text, VOICE)
+    communicate = edge_tts.Communicate(tran_text, VOICE, proxy="http://127.0.0.1:10809")
     await communicate.save(voice_path)
 
 if __name__ == '__main__':

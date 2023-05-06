@@ -104,6 +104,9 @@ func (scrapy HulkScrapy) ParseChapter(doc *html.Node) (string, string) {
 		}
 
 		line := removeSpecialChars(lineContent)
+		if isEndLine(line) {
+			break
+		}
 		if line == "" {
 			continue
 		}
@@ -120,7 +123,7 @@ func (scrapy HulkScrapy) ParseChapter(doc *html.Node) (string, string) {
 func parseRealChapterTitle(content string) string {
 	// extract chapter number
 	// example: https://novelhulk.com/nb/spy-mage-system-book/cchapter-1
-	compileRegex := regexp.MustCompile(`(\d{1,}):?`)
+	compileRegex := regexp.MustCompile(`(\d{1,}).?-?:?`)
 	matchArr := compileRegex.FindStringSubmatch(content)
 	if len(matchArr) < 2 {
 		return content
@@ -134,6 +137,7 @@ func parseRealChapterTitle(content string) string {
 
 	chapterTitleStartIndex := chapterNumStartIndex + len(chapterNum)
 	chapterTitle := strings.Trim(content[chapterTitleStartIndex:], ": ")
+	chapterTitle = strings.Trim(chapterTitle, "- ")
 	return chapterTitle
 }
 
@@ -142,7 +146,7 @@ func parseRealChapterTitle(content string) string {
 func parseFirstLineChapterTitle(content string) string {
 	// extract chapter number
 	// example: https://novelhulk.com/nb/spy-mage-system-book/cchapter-1
-	compileRegex := regexp.MustCompile(`(\d{1,}):?`)
+	compileRegex := regexp.MustCompile(`(\d{1,}).?-?:?`)
 	matchArr := compileRegex.FindStringSubmatch(content)
 	if len(matchArr) < 2 {
 		return ""
@@ -156,6 +160,7 @@ func parseFirstLineChapterTitle(content string) string {
 
 	chapterTitleStartIndex := chapterNumStartIndex + len(chapterNum)
 	chapterTitle := strings.Trim(content[chapterTitleStartIndex:], ": ")
+	chapterTitle = strings.Trim(chapterTitle, "- ")
 	return chapterTitle
 }
 
@@ -173,7 +178,44 @@ func removeSpecialChars(content string) string {
 		return ""
 	}
 
+	if strings.HasPrefix(content, "Translator:") {
+		return ""
+	}
+
+	compileRegex = regexp.MustCompile(`(…{2,})`)
+	matchArr = compileRegex.FindStringSubmatch(content)
+	if len(matchArr) >= 2 {
+		return ""
+	}
+
+	compileRegex = regexp.MustCompile(`(\*{3,})`)
+	matchArr = compileRegex.FindStringSubmatch(content)
+	if len(matchArr) >= 2 {
+		return ""
+	}
+
+	if content == "[…]" || content == "-" || content == "“…”" || content == "__" {
+		return ""
+	}
+
+	webContent := strings.ReplaceAll(content, "[", "")
+	webContent = strings.ReplaceAll(webContent, "]", "")
+	webContent = strings.Trim(strings.ReplaceAll(webContent, "/", ""), " ")
+	if strings.Contains(webContent, ".com") || strings.Contains(webContent, ".net") {
+		return ""
+	}
+
 	return content
+}
+
+func isEndLine(content string) bool {
+	if content == "Note:" || content == "Notes:" || content == "Endnote:" || content == "Endnote" {
+		return true
+	}
+	if content == "Preview:" {
+		return true
+	}
+	return false
 }
 
 func (scrapy HulkScrapy) Save(fileDir, fileName, content string) {

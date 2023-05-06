@@ -11,7 +11,7 @@ const (
 	FileNameDesc       = "desc.txt"
 	FileNameChapter    = "ch-%d.txt"
 	UrlHulkNovelDomain = "https://novelhulk.com"
-	PathNovelName      = "/nb/spy-mage-system-book"
+	PathNovelName      = "/nb/necropolis-immortal-book"
 	PathChapterList    = "/ajax/chapter-option?novelId=%s&currentChapterId=%s"
 )
 
@@ -35,5 +35,6 @@ func WithUrl() *Url {
 }
 
 func BuildNovelUrl() string {
-	return UrlHulkNovelDomain + PathNovelName
+	// return UrlHulkNovelDomain + PathNovelName
+	return UrlHulkNovelDomain + "/nb/"
 }
