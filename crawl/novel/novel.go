@@ -64,6 +64,7 @@ func Scrapy(startChapter, endChapter int, path string) {
 		fmt.Println("chapter list is empty.")
 		return
 	}
+	fmt.Println("chapter list number is", len(chapterList))
 
 	if startChapter <= -1 {
 		startChapter = 1
