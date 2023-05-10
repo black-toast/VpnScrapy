@@ -67,3 +67,32 @@ func Login(email string, password string) ([]byte, error) {
 	//fmt.Println("response body:", string(decrypt_result))
 	return decryptResult, nil
 }
+
+var ssrSubscribeUrl = "https://fast.lycorisrecoil.org/link/sVfp6MHIJv1auOpA?list=ssa"
+
+func SsrSubscribe() ([]byte, error) {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET",
+		ssrSubscribeUrl,
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36")
+	req.Header.Set("Accept", "*/*")
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			return
+		}
+	}(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	return body, err
+}

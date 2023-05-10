@@ -15,6 +15,7 @@ func Launch(engine *gin.Engine) {
 	{
 		LaunchNovel(v1Group)
 		v1Group.GET("/vmess", generateVmessList)
+		v1Group.GET("/ssr", generateSsList)
 	}
 }
 
@@ -59,4 +60,37 @@ func generateVmessList(c *gin.Context) {
 		vmessList += fmt.Sprintf("vmess://%s\n", base64.StdEncoding.EncodeToString([]byte(vmessEncodeSrc)))
 	}
 	c.String(http.StatusOK, vmessList)
+}
+
+func generateSsList(c *gin.Context) {
+	ssrSubscribeByte, err := vpnHttp.SsrSubscribe()
+	if err != nil {
+		fmt.Println("request ssr subscribe failure")
+		return
+	}
+
+	result, err := util.Parse(ssrSubscribeByte, []bean.SsrSubscribe{})
+	if err != nil {
+		fmt.Println("parse ssr subscribe response data failure, err=", err)
+		return
+	}
+	if len(result) <= 0 {
+		fmt.Println("ssr vpn node list is empty")
+		return
+	}
+
+	ssrSubscribeList := ""
+	for _, node := range result {
+		ssrLink := fmt.Sprintf(
+			"%s:%d:origin:%s:plain:%s/?obfsparam=&remarks=%s&group=Y29tcGFueQ",
+			node.Server,
+			node.ServerPort,
+			node.Method,
+			base64.StdEncoding.EncodeToString([]byte(node.Password)),
+			base64.StdEncoding.EncodeToString([]byte(node.Remarks)),
+		)
+
+		ssrSubscribeList += fmt.Sprintf("ssr://%s\n", base64.StdEncoding.EncodeToString([]byte(ssrLink)))
+	}
+	c.String(http.StatusOK, ssrSubscribeList)
 }
