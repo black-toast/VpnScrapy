@@ -219,7 +219,10 @@ func removeSpecialChars(content string) string {
 }
 
 func isEndLine(content string) bool {
-	if content == "Note:" || content == "Notes:" || content == "Endnote:" || content == "Endnote" {
+	if content == "Note:" || content == "Notes:" {
+		return true
+	}
+	if content == "Endnote:" || content == "Endnote" || content == "Endnotes:" {
 		return true
 	}
 	if content == "Preview:" {
