@@ -27,6 +27,8 @@ func Scrapy(startChapter, endChapter int, path string) {
 		return
 	}
 
+	saveNovelIntroductSwitch := false
+
 	// request novel introduction
 	fmt.Println("request novel introduction")
 	novelUrl := BuildNovelUrl() + path
@@ -37,17 +39,20 @@ func Scrapy(startChapter, endChapter int, path string) {
 	novelScrapy := new(hulk.HulkScrapy)
 	doc := novelScrapy.CreateParseDoc(string(content))
 	title := novelScrapy.ParseTitle(doc)
-	author := novelScrapy.ParseAuthor(doc)
-	desc := novelScrapy.ParseDesc(doc)
 	novelId := novelScrapy.ParseNovelId(doc)
 	readChapterId := novelScrapy.ParseReadChapterId(doc, novelUrl+"/")
 
-	// save novel introduction
 	titlePath := strings.ReplaceAll(title, " ", "")
 	novelDir := fmt.Sprintf("%s%s%s", url.saveIntroductionPath, string(os.PathSeparator), titlePath)
-	novelScrapy.Save(novelDir, FileNameTitle, title)
-	novelScrapy.Save(novelDir, FileNameAuthor, author)
-	novelScrapy.Save(novelDir, FileNameDesc, desc)
+
+	// save novel introduction
+	if saveNovelIntroductSwitch {
+		author := novelScrapy.ParseAuthor(doc)
+		desc := novelScrapy.ParseDesc(doc)
+		novelScrapy.Save(novelDir, FileNameTitle, title)
+		novelScrapy.Save(novelDir, FileNameAuthor, author)
+		novelScrapy.Save(novelDir, FileNameDesc, desc)
+	}
 
 	// request novel chapter list
 	fmt.Println("wait 5s, then request novel chapter list")
