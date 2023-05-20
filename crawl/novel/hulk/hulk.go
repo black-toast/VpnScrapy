@@ -87,7 +87,17 @@ func (scrapy HulkScrapy) ParseChapter(doc *html.Node) (string, string) {
 	chapter := ""
 	parseChapterTitleLine := 0
 	chapterTitle := ""
+
+chapterNodesFor:
 	for index, node := range nodes {
+		if len(node.Attr) > 0 {
+			for _, attr := range node.Attr {
+				// 跳过不展示的p标签内容
+				if attr.Key == "style" && attr.Val == "display: none;" {
+					continue chapterNodesFor
+				}
+			}
+		}
 		lineContent := strings.Trim(htmlquery.InnerText(node), "\n ")
 
 		// 解析第一行标题
