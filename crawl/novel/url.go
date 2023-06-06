@@ -12,7 +12,7 @@ const (
 	FileNameChapter    = "ch-%d.txt"
 	UrlHulkNovelDomain = "https://novelhulk.com"
 	PathNovelName      = "/nb/necropolis-immortal-book"
-	PathChapterList    = "/ajax/chapter-option?novelId=%s&currentChapterId=%s"
+	PathChapterList    = "/ajax/chapter-archive?novelId=%s"
 )
 
 type Url struct {

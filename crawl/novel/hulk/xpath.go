@@ -9,8 +9,8 @@ const (
 	NovelReadUrl = "//a[contains(@class, \"btn-read-now\")]/@href"
 
 	// 小说目录
-	NovelChapterListUrl  = "//option/@value"
-	NovelChapterListName = "//option/text()"
+	NovelChapterListUrl  = "//a/@href"
+	NovelChapterListName = "//a/@title"
 
 	// 小说章节页
 	NovelChapterTitle = "//a[@class=\"chr-title\"]/span"

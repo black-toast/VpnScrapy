@@ -40,7 +40,6 @@ func Scrapy(startChapter, endChapter int, path string) {
 	doc := novelScrapy.CreateParseDoc(string(content))
 	title := novelScrapy.ParseTitle(doc)
 	novelId := novelScrapy.ParseNovelId(doc)
-	readChapterId := novelScrapy.ParseReadChapterId(doc, novelUrl+"/")
 
 	titlePath := strings.ReplaceAll(title, " ", "")
 	novelDir := fmt.Sprintf("%s%s%s", url.saveIntroductionPath, string(os.PathSeparator), titlePath)
@@ -57,7 +56,7 @@ func Scrapy(startChapter, endChapter int, path string) {
 	// request novel chapter list
 	fmt.Println("wait 5s, then request novel chapter list")
 	time.Sleep(5 * time.Second)
-	novelChapterUrl := fmt.Sprintf(UrlHulkNovelDomain+PathChapterList, novelId, readChapterId)
+	novelChapterUrl := fmt.Sprintf(UrlHulkNovelDomain+PathChapterList, novelId)
 	content, err = Request(novelChapterUrl, "GET")
 	if err != nil {
 		panic(err)
