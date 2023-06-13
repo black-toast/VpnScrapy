@@ -13,8 +13,10 @@ var constant *Constant
 func init() {
 	constant = new(Constant)
 	constant.vmessFormat = "{\"v\": \"2\",\"ps\": \"%s\",\"add\": \"%s\",\"port\": \"%d\",\"id\": \"%s\",\"aid\": \"0\",\"scy\": \"auto\",\"net\": \"%s\",\"type\": \"%s\",\"host\": \"\",\"path\": \"%s\",\"tls\": \"%s\",\"sni\": \"\",\"alpn\": \"\"}"
-	constant.tlyEmail = "1479405751@qq.com"
-	constant.tlyPassword = "1479405751yy"
+	constant.tlyEmail = "blacktoast@qq.com"
+	//constant.tlyEmail = "1479405751@qq.com"
+	constant.tlyPassword = "tly123654"
+	//constant.tlyPassword = "1479405751yy"
 	constant.aesKey = []byte("tlynet923456789k")
 	constant.aesIv = []byte("9987654321fedcsu")
 }
