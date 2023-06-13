@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 func Launch(engine *gin.Engine) {
@@ -86,11 +87,16 @@ func generateSsList(c *gin.Context) {
 			node.Server,
 			node.ServerPort,
 			node.Method,
-			base64.StdEncoding.EncodeToString([]byte(node.Password)),
-			base64.StdEncoding.EncodeToString([]byte(node.Remarks)),
+			encodeBase64(node.Password),
+			encodeBase64(node.Remarks),
 		)
 
-		ssrSubscribeList += fmt.Sprintf("ssr://%s\n", base64.StdEncoding.EncodeToString([]byte(ssrLink)))
+		ssrSubscribeList += fmt.Sprintf("ssr://%s\n", encodeBase64(ssrLink))
 	}
 	c.String(http.StatusOK, ssrSubscribeList)
+}
+
+func encodeBase64(str string) string {
+	encode := base64.StdEncoding.EncodeToString([]byte(str))
+	return strings.ReplaceAll(encode, "=", "")
 }
