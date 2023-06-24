@@ -17,3 +17,4 @@
 output/*/*.txt
 output/*/*.mp3
 output/*/*.mp4
+output/novels.json

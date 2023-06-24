@@ -63,6 +63,11 @@ func Scrapy(startChapter, endChapter int, path string) {
 	}
 	doc = novelScrapy.CreateParseDoc(string(content))
 	chapterList := novelScrapy.ParseNovelChapterList(doc)
+	if chapterListJson, err := util.Format(chapterList); err != nil {
+		panic(err)
+	} else {
+		novelScrapy.Save(novelDir, FileChapterList, chapterListJson)
+	}
 
 	if len(chapterList) <= 0 {
 		fmt.Println("chapter list is empty.")

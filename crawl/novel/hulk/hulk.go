@@ -15,8 +15,8 @@ type HulkScrapy struct {
 }
 
 type ChapterList struct {
-	Name string
-	Url  string
+	Name string `json:"name"`
+	Url  string `json:"url"`
 }
 
 func (scrapy HulkScrapy) CreateParseDoc(content string) *html.Node {

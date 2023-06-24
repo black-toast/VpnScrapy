@@ -10,3 +10,11 @@ func Parse[T any](jsonData []byte, instance T) (T, error) {
 	}
 	return instance, nil
 }
+
+func Format(instance any) (string, error) {
+	formatStr, err := json.Marshal(instance)
+	if err != nil {
+		return "", err
+	}
+	return string(formatStr), nil
+}

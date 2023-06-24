@@ -9,6 +9,7 @@ const (
 	FileNameTitle      = "title.txt"
 	FileNameAuthor     = "author.txt"
 	FileNameDesc       = "desc.txt"
+	FileChapterList    = "chapter_list.txt"
 	FileNameChapter    = "ch-%d.txt"
 	UrlHulkNovelDomain = "https://novelhulk.com"
 	PathNovelName      = "/nb/necropolis-immortal-book"
