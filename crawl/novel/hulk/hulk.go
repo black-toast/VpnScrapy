@@ -40,7 +40,7 @@ func (scrapy HulkScrapy) ParseAuthor(doc *html.Node) string {
 
 func (scrapy HulkScrapy) ParseDesc(doc *html.Node) string {
 	node := htmlquery.FindOne(doc, NovelDesc)
-	return strings.Trim(htmlquery.InnerText(node), "\n ")
+	return parseNovelDesc(htmlquery.InnerText(node))
 }
 
 func (scrapy HulkScrapy) ParseNovelId(doc *html.Node) string {
@@ -126,6 +126,34 @@ chapterNodesFor:
 		}
 	}
 	return chapterTitle, chapter
+}
+
+// 解析小说描述
+func parseNovelDesc(desc string) string {
+	desc = strings.Trim(desc, "\n ")
+	descSplit := strings.Split(desc, "\n")
+	desc = ""
+	for index, split := range descSplit {
+		tmp := strings.ReplaceAll(split, "…", "")
+		tmp = strings.ReplaceAll(tmp, "-", "")
+		if tmp == "" || split == "" || strings.LastIndex(split, "Translator") == 0 {
+			continue
+		}
+		if strings.LastIndex(split, "Disclaimer") == 0 ||
+			strings.LastIndex(split, "Follow me on") == 0 ||
+			strings.Contains(split, "@Webnovel_MLB") {
+			continue
+		}
+		if strings.LastIndex(split, "Find out in") == 0 {
+			break
+		}
+
+		if index != 0 {
+			desc += "\n"
+		}
+		desc += split
+	}
+	return desc
 }
 
 // 解析真正的章节标题
