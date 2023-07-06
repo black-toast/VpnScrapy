@@ -205,9 +205,9 @@ func parseFirstLineChapterTitle(content string) string {
 func removeSpecialChars(content string) string {
 	// remove ..... format
 	// example: https://novelhulk.com/nb/spy-mage-system-book/cchapter-1
-	compileRegex := regexp.MustCompile(`(\.{2,})`)
+	compileRegex := regexp.MustCompile(`^"?\.{2,}"?$`)
 	matchArr := compileRegex.FindStringSubmatch(content)
-	if len(matchArr) >= 2 {
+	if len(matchArr) > 0 {
 		return ""
 	}
 
@@ -247,7 +247,7 @@ func removeSpecialChars(content string) string {
 }
 
 func isEndLine(content string) bool {
-	if content == "Note:" || content == "Notes:" {
+	if content == "Note:" || content == "Notes:" || strings.Index(content, "Author’s Note:") != -1 {
 		return true
 	}
 	if content == "Endnote:" || content == "Endnote" || content == "Endnotes:" {
