@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 var titles = [6]string{
@@ -32,12 +33,12 @@ func TestMain(t *testing.T) {
 }
 
 func TestScrapyNovel(t *testing.T) {
-	novel.Scrapy(57, 60, titles[0])
-	novel.Scrapy(57, 82, titles[1])
-	novel.Scrapy(63, 104, titles[2])
-	novel.Scrapy(487, 487, titles[3])
-	novel.Scrapy(285, 285, titles[4])
-	novel.Scrapy(187, 187, titles[5])
+	// novel.Scrapy(57, 60, titles[0])
+	// novel.Scrapy(57, 82, titles[1])
+	// novel.Scrapy(329, 329, titles[2])
+	// novel.Scrapy(487, 487, titles[3])
+	novel.Scrapy(379, 384, titles[4])
+	// novel.Scrapy(187, 187, titles[5])
 }
 
 func TestGenerateChapterList(t *testing.T) {
@@ -91,6 +92,9 @@ func TestGenerateChapterList(t *testing.T) {
 				}
 
 				chapterContent := string(chapterByte)
+				if chapterContent == "" {
+					continue
+				}
 				chapterContentSplit := strings.Split(chapterContent, "\n")
 				chapterTitleSplit := strings.Split(chapterContentSplit[0], ": ")
 				chapterIndexStr := strings.ReplaceAll(chapterTitleSplit[0], "Chapter ", "")
@@ -130,5 +134,43 @@ func saveNovelsJson(novels []*bean.Novel) {
 		saveFile.Close()
 
 		// fmt.Println("novelsJson", novelsJson)
+	}
+}
+
+func TestMkdir(t *testing.T) {
+	dir := "D:\\go_workspace\\src\\VpnScrapy\\output\\MarvelsSuperman\\ch-%d.txt"
+	for i := 403; i < 538; i++ {
+		path := fmt.Sprintf(dir, i)
+		storage.Create(path)
+	}
+}
+
+func TestTransform(t *testing.T) {
+	dir := "D:\\go_workspace\\src\\VpnScrapy\\output\\MarvelsSuperman"
+	for index := 401; index < 415; index++ {
+		chapterFile := fmt.Sprintf("ch-%d.txt", index+1)
+
+		if index == 0 {
+			fmt.Println("wait 2s, then request novel chapter(", chapterFile, ")")
+		} else {
+			fmt.Println("wait 2s, then request next novel chapter(", chapterFile, ")")
+		}
+		time.Sleep(2 * time.Second)
+
+		t := time.Now()
+		//参数必须是这个时间,格式任意
+		// s := t.Format("2006-01-02 15:04:05")
+		currentTime := t.Format("2006-01-02 15:04:05")
+		fmt.Printf("current time: %s\n", currentTime)
+
+		startCost := t.Unix()
+		chapterByte, err := storage.Read(dir + "\\" + chapterFile)
+		if err != nil {
+			panic(err)
+		}
+		novel.TransformFormat(index, dir, chapterFile, string(chapterByte))
+
+		endCost := time.Now().Unix()
+		fmt.Printf("👆======================cost %ds=======================👆\n", (endCost - startCost))
 	}
 }

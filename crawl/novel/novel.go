@@ -145,6 +145,31 @@ func Scrapy(startChapter, endChapter int, path string) {
 	}
 }
 
+func TransformFormat(index int, novelDir string, saveChapterFileName string, chapter string) {
+	novelScrapy := new(hulk.HulkScrapy)
+	// save chapter
+	novelScrapy.Save(novelDir, saveChapterFileName, chapter)
+	fmt.Println("save chapter complete")
+
+	// transform mp3 audio
+	ttsInput := fmt.Sprintf(`%s\ch-%d.txt`, novelDir, index+1)
+	ttsMp3Output := fmt.Sprintf(`%s\ch-%d.mp3`, novelDir, index+1)
+	util.EdgeTts(ttsInput, ttsMp3Output)
+	fmt.Println("transform mp3 complete")
+
+	// transform mp4 video
+	videoImage := fmt.Sprintf(`%s\cover.jpg`, novelDir)
+	ttsMp4Output := fmt.Sprintf(`%s\ch-%d.mp4`, novelDir, index+1)
+	// 保证执行ffmpeg命令不会提示该文件已存在
+	storage.Delete(ttsMp4Output)
+	util.MakeImageVideo(videoImage, ttsMp3Output, ttsMp4Output)
+	fmt.Println("transform mp4 complete")
+
+	// storage.Delete(ttsInput)
+	storage.Delete(ttsMp3Output)
+	// storage.Delete(ttsMp4Output)
+}
+
 func Request(url string, method string) ([]byte, error) {
 	novelContent, err := http.Request(&http.RequestConfig{
 		Method:    method,
