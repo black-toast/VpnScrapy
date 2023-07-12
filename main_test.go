@@ -147,7 +147,7 @@ func TestMkdir(t *testing.T) {
 
 func TestTransform(t *testing.T) {
 	dir := "D:\\go_workspace\\src\\VpnScrapy\\output\\MarvelsSuperman"
-	for index := 401; index < 415; index++ {
+	for index := 412; index < 415; index++ {
 		chapterFile := fmt.Sprintf("ch-%d.txt", index+1)
 
 		if index == 0 {
