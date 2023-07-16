@@ -47,14 +47,16 @@ let YTB_TOOL_CSS = `
     margin-top: 5px;
 }`;
 
+let stop_script = false;
 let novels;
 let video_index;
 let day_upload_number = -1;
 let video_date_schedule = "";
 
 // let audio_link = "https://webfs.ali.kugou.com/202307090851/3f3b73fa771392eb91a11db76fb2abd7/KGTX/CLTX003/7c9c160cd67cdf0acf68aac25a7ce2c2.mp3";
-let audio_link = "https://webfs.ali.kugou.com/202307091752/c591b56464870b2c9a60468f31cb869b/KGTX/CLTX001/02add6e7539d4e92b81eb0bdff186058.mp3";
+let audio_link = "https://webfs.ali.kugou.com/202307151942/0b6ef60293ef90f55efc8df49fdc2b1d/part/0/960113/KGTX/CLTX001/clip_24f5e7555646965cd7d1a924452b3300.mp3";
 let notify_audio;
+let notify_audio_start = 18;
 
 const async_await = function(wait_ms) {
     return new Promise((resolve, reject) => {
@@ -205,6 +207,14 @@ function setNovelsChange(config_elem) {
 // 设置上传按钮点击
 async function setUploadButtonClick(uploadElem) {
     uploadElem.onclick = function() {
+        let upload_elem = document.querySelector('#mock_upload_video');
+        if (upload_elem.innerText == "停止脚本") {
+            stop_script = true;
+            upload_elem.innerText = "上传视频";
+            return;
+        }
+
+        upload_elem.innerText = "停止脚本";
         try {
             let video_index_elem = document.querySelector('#mock_video_index');
             let parse_video_index = parseInt(video_index_elem.value);
@@ -281,7 +291,7 @@ function notifyAutoUploadFinish() {
     } else {
         notify_audio = new Audio(audio_link);
     }
-    notify_audio.currentTime = 12;
+    notify_audio.currentTime = notify_audio_start;
 	notify_audio.play();
 
     let mock_container = document.querySelector('#mock-ytb-tool');
@@ -291,6 +301,10 @@ function notifyAutoUploadFinish() {
     mock_stop_notify_elem.type = "button";
     mock_stop_notify_elem.onclick = stopAutoUploadNotify;
     mock_container.appendChild(mock_stop_notify_elem);
+
+    let upload_elem = document.querySelector('#mock_upload_video');
+    upload_elem.innerText = "上传视频";
+    stop_script = false;
 }
 
 function stopAutoUploadNotify() {
@@ -317,8 +331,13 @@ async function executeUploadScript() {
     let progress_items = document.querySelectorAll('#progress-list li');
 progress_item_for:
     for (var index = 0; index < progress_items.length; index++) {
-        console.log('click index', index);
+        // 停止脚本
+        if (stop_script) {
+            stop_script = false;
+            break;
+        }
 
+        console.log('click index', index);
         let progress_item = progress_items[index];
         await async_polling(500, function() {
             return progress_item.querySelector(".progress-title");
@@ -334,6 +353,7 @@ progress_item_for:
                 console.log("chapter:", chapter);
 
                 // 点击上传列表标题
+                await async_await(5000);
                 progress_title_elem.click();
 
                 // 输入标题
@@ -352,7 +372,7 @@ progress_item_for:
                 document.querySelector('.compact-row .dropdown').click();
 
                 // 输入搜索播放列表
-                await async_await(1000);
+                await async_await(2000);
                 const playlist_search = document.querySelector('#search-input');
                 mock_input(playlist_search, novel.name);
 
@@ -370,7 +390,7 @@ progress_item_for:
                 document.querySelector('ytcp-playlist-dialog .done-button').click();
 
                 // 点击继续按钮直到保存按钮出现
-                await async_polling(1000, function() {
+                await async_polling(2000, function() {
                     let continue_button = document.querySelector('#next-button');
                     if (continue_button) {
                         if (!continue_button.attributes.hasOwnProperty("hidden")) {
@@ -393,18 +413,24 @@ progress_item_for:
                 document.querySelector('#datepicker-trigger .right-container').click();
 
                 // 输入安排时间
-                await async_await(1000);
+                await async_await(2000);
                 let date_input = document.querySelector('ytcp-date-picker input');
+                await async_await(1000);
                 mock_input(date_input, video_date_schedule);
 
                 // 隐藏时间选择弹框
                 await async_await(1000);
                 document.querySelector('body>tp-yt-iron-overlay-backdrop').click();
 
-                // 设置时间
+                // 点击时刻栏
                 await async_await(1000);
-                let time_input = document.querySelector('#labelAndInputContainer input');
-                mock_input(time_input, "08:00");
+                document.querySelector('#time-of-day-container #textbox').click();
+
+                // 设置时间
+                await async_await(2000);
+                // let time_input = document.querySelector('#labelAndInputContainer input');
+                // mock_input(time_input, "08:00");
+                document.querySelectorAll('tp-yt-paper-listbox .ytcp-time-of-day-picker')[32].click();
 
                 // 隐藏时间选择弹框
                 await async_await(1000);
@@ -415,12 +441,12 @@ progress_item_for:
                 document.querySelector('#done-button').click();
 
                 // 点击分享关闭按钮
-                await async_await(5000);
                 await async_polling(1000, function() {
                     return document.querySelector('ytcp-video-share-dialog #close-button .label') ||
                         document.querySelector('ytcp-uploads-still-processing-dialog #close-button .label');;
                 });
 
+                await async_await(2000);
                 let share_dialog_colse = document.querySelector('ytcp-video-share-dialog #close-button .label');
                 if (share_dialog_colse) {
                     share_dialog_colse.click();
