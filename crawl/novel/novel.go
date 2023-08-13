@@ -145,17 +145,16 @@ func Scrapy(startChapter, endChapter int, path string) {
 	}
 }
 
-func TransformFormat(index int, novelDir string, saveChapterFileName string, chapter string) {
-	novelScrapy := new(hulk.HulkScrapy)
-	// save chapter
-	novelScrapy.Save(novelDir, saveChapterFileName, chapter)
-	fmt.Println("save chapter complete")
-
+func TransformMp3(index int, novelDir string) {
 	// transform mp3 audio
 	ttsInput := fmt.Sprintf(`%s\ch-%d.txt`, novelDir, index+1)
 	ttsMp3Output := fmt.Sprintf(`%s\ch-%d.mp3`, novelDir, index+1)
 	util.EdgeTts(ttsInput, ttsMp3Output)
 	fmt.Println("transform mp3 complete")
+}
+
+func TransformMp4(index int, novelDir string) {
+	ttsMp3Output := fmt.Sprintf(`%s\ch-%d.mp3`, novelDir, index+1)
 
 	// transform mp4 video
 	videoImage := fmt.Sprintf(`%s\cover.jpg`, novelDir)

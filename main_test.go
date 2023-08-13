@@ -13,13 +13,15 @@ import (
 	"time"
 )
 
-var titles = [6]string{
-	"necropolis-immortal-book",
-	"spy-mage-system-book",
-	"cultivation-online-novel-book",
-	"the-experimental-log-of-the-crazy-lich-book",
-	"invincible-divine-dragons-cultivation-system-book",
-	"trial-marriage-husband-need-to-work-hard-book",
+var titles = [8]string{
+	"cultivation-online-novel",
+	"invincible-divine-dragons-cultivation-system",
+	"MarvelsSuperman",
+	"necropolis-immortal",
+	"spy-mage-system",
+	"the-death-mage-who-doesnt-want-a-fourth-time",
+	"the-experimental-log-of-the-crazy-lich",
+	"trial-marriage-husband-need-to-work-hard",
 }
 
 func TestMain(t *testing.T) {
@@ -33,12 +35,14 @@ func TestMain(t *testing.T) {
 }
 
 func TestScrapyNovel(t *testing.T) {
-	// novel.Scrapy(57, 60, titles[0])
-	// novel.Scrapy(57, 82, titles[1])
-	// novel.Scrapy(329, 329, titles[2])
-	// novel.Scrapy(487, 487, titles[3])
-	novel.Scrapy(379, 384, titles[4])
-	// novel.Scrapy(187, 187, titles[5])
+	novel.Scrapy(1180, 1180, titles[0])
+	// novel.Scrapy(501, 600, titles[1])
+	// novel.Scrapy(1, 1, titles[2])
+	// novel.Scrapy(349, 349, titles[3])
+	// novel.Scrapy(332, 433, titles[4])
+	// novel.Scrapy(101, 101, titles[5])
+	// novel.Scrapy(1, 1, titles[6])
+	// novel.Scrapy(542, 600, titles[7])
 }
 
 func TestGenerateChapterList(t *testing.T) {
@@ -139,38 +143,140 @@ func saveNovelsJson(novels []*bean.Novel) {
 
 func TestMkdir(t *testing.T) {
 	dir := "D:\\go_workspace\\src\\VpnScrapy\\output\\MarvelsSuperman\\ch-%d.txt"
-	for i := 403; i < 538; i++ {
+	for i := 1; i < 401; i++ {
 		path := fmt.Sprintf(dir, i)
 		storage.Create(path)
 	}
 }
 
-func TestTransform(t *testing.T) {
-	dir := "D:\\go_workspace\\src\\VpnScrapy\\output\\MarvelsSuperman"
-	for index := 412; index < 415; index++ {
-		chapterFile := fmt.Sprintf("ch-%d.txt", index+1)
+func TestTransformMp3(t *testing.T) {
+	expectedNovelIndex := 1
+	expectedChapterStartIndex := 1
+	expectedChapterEndIndex := 1
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
 
-		if index == 0 {
-			fmt.Println("wait 2s, then request novel chapter(", chapterFile, ")")
-		} else {
-			fmt.Println("wait 2s, then request next novel chapter(", chapterFile, ")")
+	outputDir := wd + "\\output\\"
+	chapterPrefix := "ch-"
+	chapterSuffix := ".txt"
+	novelDirs, err := storage.ReadDir(outputDir)
+	if err != nil {
+		panic(err)
+	}
+
+	for novelIndex, novelDir := range novelDirs {
+		if novelDir.Name() == "novels.json" || novelIndex != expectedNovelIndex {
+			continue
 		}
-		time.Sleep(2 * time.Second)
 
-		t := time.Now()
-		//参数必须是这个时间,格式任意
-		// s := t.Format("2006-01-02 15:04:05")
-		currentTime := t.Format("2006-01-02 15:04:05")
-		fmt.Printf("current time: %s\n", currentTime)
-
-		startCost := t.Unix()
-		chapterByte, err := storage.Read(dir + "\\" + chapterFile)
+		novelRootDir := outputDir + "\\" + novelDir.Name()
+		novelChapters, err := storage.ReadDir(novelRootDir)
 		if err != nil {
 			panic(err)
 		}
-		novel.TransformFormat(index, dir, chapterFile, string(chapterByte))
 
-		endCost := time.Now().Unix()
-		fmt.Printf("👆======================cost %ds=======================👆\n", (endCost - startCost))
+		for novelChapterIndex, novelChapter := range novelChapters {
+			if !strings.HasPrefix(novelChapter.Name(), chapterPrefix) ||
+				!strings.HasSuffix(novelChapter.Name(), chapterSuffix) {
+				continue
+			}
+
+			realChapterStr, _ := strings.CutPrefix(novelChapter.Name(), chapterPrefix)
+			realChapterStr, _ = strings.CutSuffix(realChapterStr, chapterSuffix)
+			realChapterIndex, _ := strconv.Atoi(realChapterStr)
+			if realChapterIndex < expectedChapterStartIndex ||
+				realChapterIndex > expectedChapterEndIndex {
+				continue
+			}
+
+			chapterFile := fmt.Sprintf("ch-%d.txt", realChapterIndex)
+
+			if novelChapterIndex == 0 {
+				fmt.Println("wait 2s, then request novel chapter(", chapterFile, ")")
+			} else {
+				fmt.Println("wait 2s, then request next novel chapter(", chapterFile, ")")
+			}
+			time.Sleep(2 * time.Second)
+
+			t := time.Now()
+			//参数必须是这个时间,格式任意
+			// s := t.Format("2006-01-02 15:04:05")
+			currentTime := t.Format("2006-01-02 15:04:05")
+			fmt.Printf("current time: %s\n", currentTime)
+
+			startCost := t.Unix()
+			novel.TransformMp3(realChapterIndex-1, novelRootDir)
+
+			endCost := time.Now().Unix()
+			fmt.Printf("👆======================cost %ds=======================👆\n", (endCost - startCost))
+		}
+	}
+}
+
+func TestTransformMp4(t *testing.T) {
+	expectedNovelIndex := 2
+	expectedChapterStartIndex := 191
+	expectedChapterEndIndex := 270
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	outputDir := wd + "\\output\\"
+	chapterPrefix := "ch-"
+	chapterSuffix := ".mp3"
+	novelDirs, err := storage.ReadDir(outputDir)
+	if err != nil {
+		panic(err)
+	}
+
+	for novelIndex, novelDir := range novelDirs {
+		if novelDir.Name() == "novels.json" || novelIndex != expectedNovelIndex {
+			continue
+		}
+
+		novelRootDir := outputDir + "\\" + novelDir.Name()
+		novelChapters, err := storage.ReadDir(novelRootDir)
+		if err != nil {
+			panic(err)
+		}
+
+		for novelChapterIndex, novelChapter := range novelChapters {
+			if !strings.HasPrefix(novelChapter.Name(), chapterPrefix) ||
+				!strings.HasSuffix(novelChapter.Name(), chapterSuffix) {
+				continue
+			}
+
+			realChapterStr, _ := strings.CutPrefix(novelChapter.Name(), chapterPrefix)
+			realChapterStr, _ = strings.CutSuffix(realChapterStr, chapterSuffix)
+			realChapterIndex, _ := strconv.Atoi(realChapterStr)
+			if realChapterIndex < expectedChapterStartIndex ||
+				realChapterIndex > expectedChapterEndIndex {
+				continue
+			}
+
+			chapterFile := fmt.Sprintf("ch-%d.txt", realChapterIndex)
+
+			if novelChapterIndex == 0 {
+				fmt.Println("wait 2s, then request novel chapter(", chapterFile, ")")
+			} else {
+				fmt.Println("wait 2s, then request next novel chapter(", chapterFile, ")")
+			}
+			time.Sleep(2 * time.Second)
+
+			t := time.Now()
+			//参数必须是这个时间,格式任意
+			// s := t.Format("2006-01-02 15:04:05")
+			currentTime := t.Format("2006-01-02 15:04:05")
+			fmt.Printf("current time: %s\n", currentTime)
+
+			startCost := t.Unix()
+			novel.TransformMp4(realChapterIndex-1, novelRootDir)
+
+			endCost := time.Now().Unix()
+			fmt.Printf("👆======================cost %ds=======================👆\n", (endCost - startCost))
+		}
 	}
 }
