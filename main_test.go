@@ -13,8 +13,9 @@ import (
 	"time"
 )
 
-var titles = [8]string{
+var titles = [10]string{
 	"cultivation-online-novel",
+	"dual-cultivation-novel",
 	"invincible-divine-dragons-cultivation-system",
 	"MarvelsSuperman",
 	"necropolis-immortal",
@@ -35,14 +36,15 @@ func TestMain(t *testing.T) {
 }
 
 func TestScrapyNovel(t *testing.T) {
-	novel.Scrapy(1180, 1180, titles[0])
-	// novel.Scrapy(501, 600, titles[1])
-	// novel.Scrapy(1, 1, titles[2])
-	// novel.Scrapy(349, 349, titles[3])
-	// novel.Scrapy(332, 433, titles[4])
-	// novel.Scrapy(101, 101, titles[5])
-	// novel.Scrapy(1, 1, titles[6])
-	// novel.Scrapy(542, 600, titles[7])
+	// novel.Scrapy(1184, 1184, titles[0])
+	// novel.Scrapy(401, 401, titles[1])
+	// novel.Scrapy(1000, 1000, titles[2])
+	// novel.Scrapy(1, 1, titles[3])
+	// novel.Scrapy(601, 601, titles[4])
+	// novel.Scrapy(332, 433, titles[5])
+	// novel.Scrapy(386, 386, titles[6])
+	// novel.Scrapy(1, 1, titles[7])
+	novel.Scrapy(609, 999, titles[8])
 }
 
 func TestGenerateChapterList(t *testing.T) {
@@ -141,18 +143,10 @@ func saveNovelsJson(novels []*bean.Novel) {
 	}
 }
 
-func TestMkdir(t *testing.T) {
-	dir := "D:\\go_workspace\\src\\VpnScrapy\\output\\MarvelsSuperman\\ch-%d.txt"
-	for i := 1; i < 401; i++ {
-		path := fmt.Sprintf(dir, i)
-		storage.Create(path)
-	}
-}
-
 func TestTransformMp3(t *testing.T) {
-	expectedNovelIndex := 1
-	expectedChapterStartIndex := 1
-	expectedChapterEndIndex := 1
+	expectedNovelIndex := 0
+	expectedChapterStartIndex := 1183
+	expectedChapterEndIndex := 1183
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)
@@ -216,9 +210,9 @@ func TestTransformMp3(t *testing.T) {
 }
 
 func TestTransformMp4(t *testing.T) {
-	expectedNovelIndex := 2
-	expectedChapterStartIndex := 191
-	expectedChapterEndIndex := 270
+	expectedNovelIndex := 6
+	expectedChapterStartIndex := 244
+	expectedChapterEndIndex := 384
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)

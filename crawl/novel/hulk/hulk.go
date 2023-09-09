@@ -203,6 +203,7 @@ func parseFirstLineChapterTitle(content string) string {
 }
 
 func removeSpecialChars(content string) string {
+	content = strings.ReplaceAll(content, `\"`, `"`)
 	// remove ..... format
 	// example: https://novelhulk.com/nb/spy-mage-system-book/cchapter-1
 	compileRegex := regexp.MustCompile(`^"?\.{2,}"?$`)
@@ -232,14 +233,17 @@ func removeSpecialChars(content string) string {
 		return ""
 	}
 
-	if content == "[…]" || content == "-" || content == "“…”" || content == "__" {
+	if content == "[…]" || content == "-" || content == "“…”" || content == "__" ||
+		content == "–" || content == "—" {
 		return ""
 	}
 
 	webContent := strings.ReplaceAll(content, "[", "")
 	webContent = strings.ReplaceAll(webContent, "]", "")
 	webContent = strings.Trim(strings.ReplaceAll(webContent, "/", ""), " ")
-	if strings.Contains(webContent, ".com") || strings.Contains(webContent, ".net") {
+	compileRegex = regexp.MustCompile(`(\.[c|n|𝑪|𝓬|𝐂|𝑐|𝐜|𝕔|𝒸|𝗰|𝔠|𝚌][o|e|𝞸|𝚘|𝑶|𝓞|𝔬|𝐎|𝗈|𝒐|𝑂|𝑜|𝒪][m|t|𝓜|𝑚|𝚖|𝔪|𝓶|𝑀|𝗆|𝕞|𝓂|𝐦|𝐌])`)
+	matchArr = compileRegex.FindStringSubmatch(webContent)
+	if len(matchArr) >= 2 {
 		return ""
 	}
 
@@ -247,7 +251,7 @@ func removeSpecialChars(content string) string {
 }
 
 func isEndLine(content string) bool {
-	if content == "Note:" || content == "Notes:" || strings.Index(content, "Author’s Note:") != -1 {
+	if content == "Note:" || content == "Notes:" || strings.Index(content, `Author’s Note:`) != -1 {
 		return true
 	}
 	if content == "Endnote:" || content == "Endnote" || content == "Endnotes:" {
