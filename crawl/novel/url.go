@@ -28,7 +28,8 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	url.saveIntroductionPath = fmt.Sprintf("%s%s%s", wd, string(os.PathSeparator), "output")
+	url.saveIntroductionPath = fmt.Sprintf("%s%s%s%s%s", wd, string(os.PathSeparator),
+		"output", string(os.PathSeparator), "novels")
 }
 
 func WithUrl() *Url {

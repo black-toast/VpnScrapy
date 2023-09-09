@@ -25,16 +25,6 @@ var titles = [10]string{
 	"trial-marriage-husband-need-to-work-hard",
 }
 
-func TestMain(t *testing.T) {
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	util.EdgeTts(wd+`\output\SpyMageSystem\ch-26.txt`, wd+`\output\SpyMageSystem\ch-26.mp3`)
-	util.EdgeTts(wd+`\output\SpyMageSystem\ch-27.txt`, wd+`\output\SpyMageSystem\ch-27.mp3`)
-	util.EdgeTts(wd+`\output\SpyMageSystem\ch-28.txt`, wd+`\output\SpyMageSystem\ch-28.mp3`)
-}
-
 func TestScrapyNovel(t *testing.T) {
 	// novel.Scrapy(1184, 1184, titles[0])
 	// novel.Scrapy(401, 401, titles[1])
@@ -48,7 +38,7 @@ func TestScrapyNovel(t *testing.T) {
 }
 
 func TestGenerateChapterList(t *testing.T) {
-	outputDir := "./output/"
+	outputDir := "./output/novels/"
 	chapterPrefix := "ch-"
 	chapterSuffix := ".txt"
 	novelDirs, err := storage.ReadDir(outputDir)
@@ -134,7 +124,7 @@ func saveNovelsJson(novels []*bean.Novel) {
 		if err != nil {
 			panic(err)
 		}
-		novelJsonPath := fmt.Sprintf("%s\\output\\novels.json", wd)
+		novelJsonPath := fmt.Sprintf("%s\\output\\novels\\novels.json", wd)
 		saveFile := storage.Create(novelJsonPath)
 		saveFile.WriteString(novelsJson)
 		saveFile.Close()
@@ -152,7 +142,7 @@ func TestTransformMp3(t *testing.T) {
 		panic(err)
 	}
 
-	outputDir := wd + "\\output\\"
+	outputDir := wd + "\\output\\novels\\"
 	chapterPrefix := "ch-"
 	chapterSuffix := ".txt"
 	novelDirs, err := storage.ReadDir(outputDir)
@@ -211,14 +201,14 @@ func TestTransformMp3(t *testing.T) {
 
 func TestTransformMp4(t *testing.T) {
 	expectedNovelIndex := 6
-	expectedChapterStartIndex := 244
+	expectedChapterStartIndex := 360
 	expectedChapterEndIndex := 384
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
 
-	outputDir := wd + "\\output\\"
+	outputDir := wd + "\\output\\novels\\"
 	chapterPrefix := "ch-"
 	chapterSuffix := ".mp3"
 	novelDirs, err := storage.ReadDir(outputDir)

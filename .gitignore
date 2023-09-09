@@ -14,7 +14,7 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-output/*/*.txt
-output/*/*.mp3
-output/*/*.mp4
-output/novels.json
+output/novels/*/*.txt
+output/novels/*/*.mp3
+output/novels/*/*.mp4
+output/novels/novels.json
