@@ -9,6 +9,7 @@ type RequestConfig struct {
 	Method    string
 	Url       string
 	Transport http.RoundTripper
+	Headers   map[string]string
 }
 
 func Request(requestConfig *RequestConfig) ([]byte, error) {
@@ -23,6 +24,11 @@ func Request(requestConfig *RequestConfig) ([]byte, error) {
 		return nil, err
 	}
 
+	if requestConfig.Headers != nil {
+		for key, value := range requestConfig.Headers {
+			req.Header.Set(key, value)
+		}
+	}
 	SetCommonHeader(req.Header)
 	resp, err := client.Do(req)
 	if err != nil {

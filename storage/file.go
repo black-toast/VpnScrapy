@@ -56,3 +56,10 @@ func Read(path string) ([]byte, error) {
 	}
 	return os.ReadFile(path)
 }
+
+func WriteFile(name string, data []byte) {
+	error := os.WriteFile(name, data, 666)
+	if error != nil {
+		panic(error)
+	}
+}
