@@ -16,6 +16,7 @@ import (
 var titles = [10]string{
 	"cultivation-online-novel",
 	"dual-cultivation-novel",
+	"immortal-and-martial-dual-cultivation",
 	"invincible-divine-dragons-cultivation-system",
 	"MarvelsSuperman",
 	"necropolis-immortal",
@@ -27,14 +28,15 @@ var titles = [10]string{
 
 func TestScrapyNovel(t *testing.T) {
 	// novel.Scrapy(1184, 1184, titles[0])
-	// novel.Scrapy(401, 401, titles[1])
-	// novel.Scrapy(1000, 1000, titles[2])
-	// novel.Scrapy(1, 1, titles[3])
-	// novel.Scrapy(601, 601, titles[4])
-	// novel.Scrapy(332, 433, titles[5])
-	// novel.Scrapy(386, 386, titles[6])
-	// novel.Scrapy(1, 1, titles[7])
-	novel.Scrapy(609, 999, titles[8])
+	// novel.Scrapy(505, 600, titles[1])
+	novel.Scrapy(101, 200, titles[2])
+	// novel.Scrapy(1000, 1000, titles[3])
+	// novel.Scrapy(1, 1, titles[4])
+	// novel.Scrapy(916, 999, titles[5])
+	// novel.Scrapy(332, 433, titles[6])
+	// novel.Scrapy(386, 386, titles[7])
+	// novel.Scrapy(1, 1, titles[8])
+	// novel.Scrapy(1000, 1000, titles[9])
 }
 
 func TestGenerateChapterList(t *testing.T) {
