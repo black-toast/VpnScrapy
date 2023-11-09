@@ -42,6 +42,7 @@ func Scrapy(startChapter, endChapter int, path string) {
 	novelId := novelScrapy.ParseNovelId(doc)
 
 	titlePath := strings.ReplaceAll(strings.ReplaceAll(title, " ", ""), ":", "")
+	titlePath = strings.ReplaceAll(titlePath, "!", "")
 	novelDir := fmt.Sprintf("%s%s%s", url.saveIntroductionPath, string(os.PathSeparator), titlePath)
 
 	// save novel introduction

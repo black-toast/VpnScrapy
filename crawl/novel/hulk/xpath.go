@@ -15,4 +15,5 @@ const (
 	// 小说章节页
 	NovelChapterTitle = "//a[@class=\"chr-title\"]/span"
 	NovelChapter      = "//*[@id=\"chr-content\"]/p"
+	NovelChapter2     = "//*[@id=\"chr-content\"]/text()"
 )

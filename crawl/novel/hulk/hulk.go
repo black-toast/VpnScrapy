@@ -84,6 +84,10 @@ func (scrapy HulkScrapy) ParseChapterTitle(doc *html.Node) string {
 func (scrapy HulkScrapy) ParseChapter(doc *html.Node) (string, string) {
 	nodes := htmlquery.Find(doc, NovelChapter)
 	lines := len(nodes)
+	if lines < 10 {
+		nodes = htmlquery.Find(doc, NovelChapter2)
+		lines = len(nodes)
+	}
 	chapter := ""
 	parseChapterTitleLine := 0
 	chapterTitle := ""
@@ -241,7 +245,7 @@ func removeSpecialChars(content string) string {
 	webContent := strings.ReplaceAll(content, "[", "")
 	webContent = strings.ReplaceAll(webContent, "]", "")
 	webContent = strings.Trim(strings.ReplaceAll(webContent, "/", ""), " ")
-	compileRegex = regexp.MustCompile(`(\.[c|n|𝑪|𝓬|𝐂|𝑐|𝐜|𝕔|𝒸|𝗰|𝔠|𝚌|𝓒][o|e|𝞸|𝚘|𝑶|𝓞|𝔬|𝐎|𝗈|𝒐|𝑂|𝑜|𝒪][m|t|𝓜|𝑚|𝚖|𝔪|𝓶|𝑀|𝗆|𝕞|𝓂|𝐦|𝐌])`)
+	compileRegex = regexp.MustCompile(`(\.[c|n|𝑪|𝓬|𝐂|𝑐|𝐜|𝕔|𝒸|𝗰|𝔠|𝚌|𝓒|𝒞][o|e|𝞸|𝚘|𝑶|𝓞|𝔬|𝐎|𝗈|𝒐|𝑂|𝑜|𝒪][m|t|𝓜|𝑚|𝚖|𝔪|𝓶|𝑀|𝗆|𝕞|𝓂|𝐦|𝐌])`)
 	matchArr = compileRegex.FindStringSubmatch(webContent)
 	if len(matchArr) >= 2 {
 		return ""

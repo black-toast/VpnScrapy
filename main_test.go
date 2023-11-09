@@ -13,30 +13,34 @@ import (
 	"time"
 )
 
-var titles = [10]string{
+var titles = [12]string{
 	"cultivation-online-novel",
 	"dual-cultivation-novel",
 	"immortal-and-martial-dual-cultivation",
 	"invincible-divine-dragons-cultivation-system",
 	"MarvelsSuperman",
 	"necropolis-immortal",
+	"shadow-slave",
 	"spy-mage-system",
+	"supreme-lord-i-can-extract-everything",
 	"the-death-mage-who-doesnt-want-a-fourth-time",
 	"the-experimental-log-of-the-crazy-lich",
 	"trial-marriage-husband-need-to-work-hard",
 }
 
 func TestScrapyNovel(t *testing.T) {
-	// novel.Scrapy(1184, 1184, titles[0])
-	// novel.Scrapy(505, 600, titles[1])
-	novel.Scrapy(101, 200, titles[2])
-	// novel.Scrapy(1000, 1000, titles[3])
+	// novel.Scrapy(1, 300, titles[0])
+	// novel.Scrapy(-1, -1, titles[1])
+	// novel.Scrapy(501, 501, titles[2])
+	// novel.Scrapy(1101, 1101, titles[3])
 	// novel.Scrapy(1, 1, titles[4])
 	// novel.Scrapy(916, 999, titles[5])
-	// novel.Scrapy(332, 433, titles[6])
-	// novel.Scrapy(386, 386, titles[7])
-	// novel.Scrapy(1, 1, titles[8])
-	// novel.Scrapy(1000, 1000, titles[9])
+	novel.Scrapy(265, 400, titles[6])
+	// novel.Scrapy(332, 433, titles[7])
+	// novel.Scrapy(101, 300, titles[8])
+	// novel.Scrapy(386, 386, titles[9])
+	// novel.Scrapy(1, 1, titles[10])
+	// novel.Scrapy(1, 1, titles[11])
 }
 
 func TestGenerateChapterList(t *testing.T) {
@@ -136,9 +140,9 @@ func saveNovelsJson(novels []*bean.Novel) {
 }
 
 func TestTransformMp3(t *testing.T) {
-	expectedNovelIndex := 0
-	expectedChapterStartIndex := 1183
-	expectedChapterEndIndex := 1183
+	expectedNovelIndex := 6
+	expectedChapterStartIndex := 101
+	expectedChapterEndIndex := 300
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)
