@@ -21,3 +21,4 @@ output/novels/*/*.txt
 output/novels/*/*.mp3
 output/novels/*/*.mp4
 output/novels/novels.json
+**/__pycache__

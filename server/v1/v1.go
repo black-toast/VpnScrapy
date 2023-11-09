@@ -6,15 +6,15 @@ import (
 	"VpnScrapy/util"
 	"encoding/base64"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Launch(engine *gin.Engine) {
 	v1Group := engine.Group("v1")
 	{
-		LaunchNovel(v1Group)
 		v1Group.GET("/vmess", generateVmessList)
 		v1Group.GET("/ssr", generateSsList)
 	}
