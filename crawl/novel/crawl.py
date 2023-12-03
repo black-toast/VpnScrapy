@@ -37,7 +37,7 @@ class Crawl():
         self.xpathChapterListUrl = "//a/@href"
         self.xpathChapterListTitle = "//a/@title"
         self.xpathChapterTitle = "//a[@class=\"chr-title\"]/span/text()"
-        self.xpathChapter = "//*[@id=\"chr-content\"]/p[not(@style)]/text()|//*[@id=\"chr-content\"]/text()"
+        self.xpathChapter = "//*[@id=\"chr-content\"]/p[not(@style)]/text()|//*[@id=\"chr-content\"]/text()|//div[@id=\"novelArticle2\"]/p[not(@style)]/text()"
 
     def request(self, method, url):
         response = request(method, url)
@@ -154,6 +154,8 @@ class Crawl():
         if "endnote:" in lowerContent or "endnote" in lowerContent or "endnotes:" in lowerContent:
             return ""
         if "preview:" in lowerContent:
+            return ""
+        if "62d67767f92eb560e77c9100" in content:
             return ""
 
         webContent = content.replace("[", "").replace("]", "")\
