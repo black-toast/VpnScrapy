@@ -1,4 +1,5 @@
 from crawl.novel.crawl import Crawl
+from crawl.novel.WuxiaCrawl import WuxiaCrawl
 import os
 import sys
 
@@ -71,8 +72,20 @@ crawl_novels = (
     },
 )
 
+wuxiacrawl_novels = (
+    {
+        "title": "Lord of the Mysteries", "novelPath": "lord-of-the-mysteries",
+        "start": 0, "end": 0, "crawl": False, "makeMp3": False, "makeMp4": False
+    },
+    {
+        "title": "Ancient Strengthening Technique", "novelPath": "ancient-strengthening-technique",
+        "start": 0, "end": 0, "crawl": False, "makeMp3": False, "makeMp4": False
+    }
+)
+
 if __name__ == '__main__':
     crawl = Crawl()
+    wuxiaCrawl = WuxiaCrawl()
     for novel in crawl_novels:
         if novel["crawl"] == False:
             crawl.offlineMake(novel["novelPath"], novel["start"], novel["end"],
@@ -81,5 +94,13 @@ if __name__ == '__main__':
             crawl.scrapy(novel["novelPath"], novel["start"], novel["end"],
                          novel["makeMp3"], novel["makeMp4"])
     
+    for novel in wuxiacrawl_novels:
+        if novel["crawl"] == False:
+            crawl.offlineMake(novel["title"], novel["novelPath"], novel["start"], novel["end"],
+                              novel["makeMp3"], novel["makeMp4"])
+        else:
+            wuxiaCrawl.scrapy(novel["title"], novel["novelPath"], novel["start"], novel["end"],
+                         novel["makeMp3"], novel["makeMp4"])
+
     if generate_novels_json:
         crawl.generateNovelsJson()
