@@ -17,7 +17,8 @@
 output/aigc/*/*.jpg
 output/aigc/*/*.png
 output/aigc/*/*.json
-output/novels/*/*.txt
+output/novels/*/ch-*.txt
+output/novels/*/chapter_list.txt
 output/novels/*/*.mp3
 output/novels/*/*.mp4
 output/novels/novels.json
