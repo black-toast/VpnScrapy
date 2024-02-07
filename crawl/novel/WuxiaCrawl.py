@@ -138,8 +138,8 @@ class WuxiaCrawl():
         print("save chapter complete")
     
     def generateChapterMp3(self, novelDir, realIndex):
-        ttsInput = '%sch-%d.txt' % (novelDir, realIndex)
-        ttsMp3Output = '%sch-%d.mp3' % (novelDir, realIndex)
+        ttsInput = '%sch-%s.txt' % (novelDir, realIndex)
+        ttsMp3Output = '%sch-%s.mp3' % (novelDir, realIndex)
         # 保证执行edge-tts命令不会提示该文件已存在
         if os.path.exists(ttsMp3Output):
             os.remove(ttsMp3Output)
@@ -148,8 +148,8 @@ class WuxiaCrawl():
 
     def generateChapterMp4(self, novelDir, realIndex):
         videoImage = '%scover.jpg' % novelDir
-        ttsMp3Output = '%sch-%d.mp3' % (novelDir, realIndex)
-        ttsMp4Output = '%sch-%d.mp4' % (novelDir, realIndex)
+        ttsMp3Output = '%sch-%s.mp3' % (novelDir, realIndex)
+        ttsMp4Output = '%sch-%s.mp4' % (novelDir, realIndex)
         # 保证执行ffmpeg命令不会提示该文件已存在
         if os.path.exists(ttsMp4Output):
             os.remove(ttsMp4Output)
@@ -184,9 +184,9 @@ class WuxiaCrawl():
 
             self.saveChapter(novelDir, index, chapterTitle, chapter)
             if makeMp3:
-                self.generateChapterMp3(novelDir, index)
+                self.generateChapterMp3(novelDir, f'{index}')
             if makeMp4:
-                self.generateChapterMp4(novelDir, index)
+                self.generateChapterMp4(novelDir, f'{index}')
 
             if makeMp4:
                 ttsMp3Output = f'{novelDir}ch-{index}.mp3'
@@ -233,22 +233,34 @@ class WuxiaCrawl():
 
         for file in os.listdir(novelDir):
             if makeMp3 == True and file.startswith("ch-") and file.endswith(".txt"):
-                chapterNum = int(file.replace("ch-", "").replace(".txt", ""))
-                if chapterNum >= startChapter and chapterNum <= endChapter:
+                chapterNum = file.replace("ch-", "").replace(".txt", "")
+                chapterRealNum = chapterNum
+                chapterRealNumSplit = chapterRealNum.split("-")
+                if len(chapterRealNumSplit) > 1:
+                    chapterRealNum = int(chapterRealNumSplit[0])
+                else:
+                    chapterRealNum = int(chapterNum)
+                if chapterRealNum >= startChapter and chapterRealNum <= endChapter:
                     currentTime = datetime.datetime.now()
                     print(f"current time: {currentTime} and make chapter {chapterNum} mp3")
-                    self.generateChapterMp3(novelDir, chapterNum)
+                    self.generateChapterMp3(novelDir, f'{chapterNum}')
                     endCost = datetime.datetime.now().timestamp()
                     print("👆======================cost %.2fs=======================👆" %
                         (endCost - currentTime.timestamp()))
 
         for file in os.listdir(novelDir):
             if makeMp4 == True and file.startswith("ch-") and file.endswith(".mp3"):
-                chapterNum = int(file.replace("ch-", "").replace(".mp3", ""))
-                if chapterNum >= startChapter and chapterNum <= endChapter:
+                chapterNum = file.replace("ch-", "").replace(".mp3", "")
+                chapterRealNum = chapterNum
+                chapterRealNumSplit = chapterRealNum.split("-")
+                if len(chapterRealNumSplit) > 1:
+                    chapterRealNum = int(chapterRealNumSplit[0])
+                else:
+                    chapterRealNum = int(chapterNum)
+                if chapterRealNum >= startChapter and chapterRealNum <= endChapter:
                     currentTime = datetime.datetime.now()
                     print(f"current time: {currentTime} and make chapter {chapterNum} mp4")
-                    self.generateChapterMp4(novelDir, chapterNum)
+                    self.generateChapterMp4(novelDir, f'{chapterNum}')
 
                     ttsMp3Output = f'{novelDir}ch-{chapterNum}.mp3'
                     if os.path.exists(ttsMp3Output):

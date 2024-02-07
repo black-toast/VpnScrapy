@@ -201,8 +201,8 @@ class Crawl():
         print("save chapter complete")
 
     def generateChapterMp3(self, novelDir, realIndex):
-        ttsInput = '%sch-%d.txt' % (novelDir, realIndex)
-        ttsMp3Output = '%sch-%d.mp3' % (novelDir, realIndex)
+        ttsInput = '%sch-%s.txt' % (novelDir, realIndex)
+        ttsMp3Output = '%sch-%s.mp3' % (novelDir, realIndex)
         # 保证执行edge-tts命令不会提示该文件已存在
         if os.path.exists(ttsMp3Output):
             os.remove(ttsMp3Output)
@@ -211,8 +211,8 @@ class Crawl():
 
     def generateChapterMp4(self, novelDir, realIndex):
         videoImage = '%scover.jpg' % novelDir
-        ttsMp3Output = '%sch-%d.mp3' % (novelDir, realIndex)
-        ttsMp4Output = '%sch-%d.mp4' % (novelDir, realIndex)
+        ttsMp3Output = '%sch-%s.mp3' % (novelDir, realIndex)
+        ttsMp4Output = '%sch-%s.mp4' % (novelDir, realIndex)
         # 保证执行ffmpeg命令不会提示该文件已存在
         if os.path.exists(ttsMp4Output):
             os.remove(ttsMp4Output)
@@ -270,9 +270,9 @@ class Crawl():
 
             self.saveChapter(novelDir, index + 1, chapterTitle, chapter)
             if makeMp3:
-                self.generateChapterMp3(novelDir, index + 1)
+                self.generateChapterMp3(novelDir, f'{index + 1}')
             if makeMp4:
-                self.generateChapterMp4(novelDir, index + 1)
+                self.generateChapterMp4(novelDir, f'{index + 1}')
 
             if makeMp4:
                 ttsMp3Output = f'{novelDir}ch-{index + 1}.mp3'
@@ -283,7 +283,7 @@ class Crawl():
             print("👆======================cost %.2fs=======================👆" %
                   (endCost - currentTime.timestamp()))
 
-    def scrapy(self, path, startChapter, endChapter, makeMp3, makeMp4):
+    def scrapy(self, title, path, startChapter, endChapter, makeMp3, makeMp4):
         if startChapter == 0 or endChapter == 0:
             print(f"skip novel path is {path}")
             return
@@ -324,7 +324,7 @@ class Crawl():
         self.requestNovelChapterList(startChapter, endChapter,  novelDir,
                                      novelChapterUrl, makeMp3, makeMp4)
 
-    def offlineMake(self, path, startChapter, endChapter, makeMp3, makeMp4):
+    def offlineMake(self, title, path, startChapter, endChapter, makeMp3, makeMp4):
         if startChapter == 0 or endChapter == 0:
             print(f"skip novel path is {path}")
             return
@@ -338,38 +338,41 @@ class Crawl():
 
         # request novel introduction
         print("request novel introduction")
-        novelUrl = self.novelPathUrl + path
-        response = self.request("GET", novelUrl)
-        if response == None:
-            return
-
-        # parse html
-        selector = Selector(response)
-        title = self.parseTitle(selector)
-
         titlePath = title.replace(" ", "").replace(":", "").replace("!", "")
         novelDir = '%s%s%s%s' % (
             self.novelsOutputPath, os.path.sep, titlePath, os.path.sep)
-        print(f"novel({title}) offline make mp3 or mp4")
+        print(f"novel({path}) offline make mp3 or mp4")
 
         for file in os.listdir(novelDir):
             if makeMp3 == True and file.startswith("ch-") and file.endswith(".txt"):
-                chapterNum = int(file.replace("ch-", "").replace(".txt", ""))
-                if chapterNum >= startChapter and chapterNum <= endChapter:
+                chapterNum = file.replace("ch-", "").replace(".txt", "")
+                chapterRealNum = chapterNum
+                chapterRealNumSplit = chapterRealNum.split("-")
+                if len(chapterRealNumSplit) > 1:
+                    chapterRealNum = int(chapterRealNumSplit[0])
+                else:
+                    chapterRealNum = int(chapterNum)
+                if chapterRealNum >= startChapter and chapterRealNum <= endChapter:
                     currentTime = datetime.datetime.now()
                     print(f"current time: {currentTime} and make chapter {chapterNum} mp3")
-                    self.generateChapterMp3(novelDir, chapterNum)
+                    self.generateChapterMp3(novelDir, f'{chapterNum}')
                     endCost = datetime.datetime.now().timestamp()
                     print("👆======================cost %.2fs=======================👆" %
                         (endCost - currentTime.timestamp()))
 
         for file in os.listdir(novelDir):
             if makeMp4 == True and file.startswith("ch-") and file.endswith(".mp3"):
-                chapterNum = int(file.replace("ch-", "").replace(".mp3", ""))
-                if chapterNum >= startChapter and chapterNum <= endChapter:
+                chapterNum = file.replace("ch-", "").replace(".mp3", "")
+                chapterRealNum = chapterNum
+                chapterRealNumSplit = chapterRealNum.split("-")
+                if len(chapterRealNumSplit) > 1:
+                    chapterRealNum = int(chapterRealNumSplit[0])
+                else:
+                    chapterRealNum = int(chapterNum)
+                if chapterRealNum >= startChapter and chapterRealNum <= endChapter:
                     currentTime = datetime.datetime.now()
                     print(f"current time: {currentTime} and make chapter {chapterNum} mp4")
-                    self.generateChapterMp4(novelDir, chapterNum)
+                    self.generateChapterMp4(novelDir, f'{chapterNum}')
 
                     ttsMp3Output = f'{novelDir}ch-{chapterNum}.mp3'
                     if os.path.exists(ttsMp3Output):
@@ -401,15 +404,26 @@ class Crawl():
                 if not chapterFile.startswith("ch-") or not chapterFile.endswith(".txt"):
                     continue
 
-                f = open(f'{novelDir}{chapterFile}', 'r', encoding='utf-8')
-                firstLineTitle = f.readline()
-                firstLineTitleSplit = firstLineTitle.split(": ")
-                chapterIndex = int(firstLineTitleSplit[0].replace("Chapter ", ""))
-                chapterTitle = firstLineTitleSplit[1]
+                chapterFileSplit = chapterFile.split("-")
+                if len(chapterFileSplit) > 2:
+                    # ch-1-10.txt format
+                    chapterStartIndex = chapterFileSplit[1]
+                    chapterEndIndex = chapterFileSplit[2].replace(".txt", "")
 
-                title = f'{novelName} CH-{chapterIndex}'
-                desc = f'NOVEL INFO: {novelName}\nChapter {chapterIndex}: {chapterTitle}Description: {novelDesc}'
-                novel["chapters"].append({"index":chapterIndex, "title": title, "desc": desc})
+                    chapterIndex = f'{chapterStartIndex}-{chapterEndIndex}'
+                    title = f'{novelName} CH-{chapterStartIndex}~{chapterEndIndex}'
+                    desc = f'NOVEL INFO: {novelName}\nDescription: {novelDesc}'
+                    novel["chapters"].append({"index":chapterIndex, "title": title, "desc": desc})
+                else:
+                    f = open(f'{novelDir}{chapterFile}', 'r', encoding='utf-8')
+                    firstLineTitle = f.readline()
+                    firstLineTitleSplit = firstLineTitle.split(": ")
+                    chapterIndex = int(firstLineTitleSplit[0].replace("Chapter ", ""))
+                    chapterTitle = firstLineTitleSplit[1]
+
+                    title = f'{novelName} CH-{chapterIndex}'
+                    desc = f'NOVEL INFO: {novelName}\nChapter {chapterIndex}: {chapterTitle}Description: {novelDesc}'
+                    novel["chapters"].append({"index":chapterIndex, "title": title, "desc": desc})
 
             novelsJson.append(novel)
 
