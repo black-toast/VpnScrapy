@@ -1,6 +1,9 @@
 import asyncio
+import os
+import re
 import edge_tts
 import sys
+import time
 
 
 def readTranText(ttsPath):
@@ -24,7 +27,24 @@ async def tran_voice(voicePath, tran_text) -> None:
 
 
 def edgeTts(ttsPath, voicePath):
-    tts_content = str(readTranText(ttsPath))
-    # loop = asyncio.get_event_loop()
-    # loop.run_until_complete(tran_voice(voicePath, str(tts_content)))
-    asyncio.run(tran_voice(voicePath, str(tts_content)))
+    lastSepIndex = voicePath.rfind(os.path.sep)
+    tmpPath = voicePath[0: lastSepIndex + 1] + "tmp.mp3"
+    tranTexts = readTranText(ttsPath).split("Chapter ")
+
+    with open(voicePath, "ab+") as audio:
+        for index, tranText in enumerate(tranTexts):
+            if index == 0:
+                continue
+            tts_content = 'Chapter %s' % tranText
+            # loop = asyncio.get_event_loop()
+            # loop.run_until_complete(tran_voice(tmpPath, str(tts_content)))
+            asyncio.run(tran_voice(tmpPath, str(tts_content)))
+
+            with open(tmpPath,'rb') as tmpFile:
+                audio.write(tmpFile.read())
+
+            time.sleep(60)
+    
+    # delte tmpPath file
+    os.remove(tmpPath)
+

@@ -381,6 +381,7 @@ class Crawl():
                     endCost = datetime.datetime.now().timestamp()
                     print("👆======================cost %.2fs=======================👆" %
                         (endCost - currentTime.timestamp()))
+                    time.sleep(200)
 
     def generateNovelsJson(self):
         print("generate novels json")
